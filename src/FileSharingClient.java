@@ -41,6 +41,10 @@ public class FileSharingClient {
         System.out.println("Client Initialized with path: " + this.path + " and port: " + this.port);
     }
 
+    public void setNewPath(String newPath) {
+        this.path = newPath;
+    }
+
     private void exec(String[] orbArgs) throws InvalidName, org.omg.CosNaming.NamingContextPackage.InvalidName, CannotProceed, NotFound {
         runServer();
         runClient();
@@ -69,11 +73,12 @@ public class FileSharingClient {
         System.out.println(allFiles.length);
     }
 
-    public void shareFiles(){
-
+    public ArrayList<File> shareFiles(){
+        getFilesToShare();
         for (File file : filesToShare){
             this.server.insertFile(this.ip.getHostAddress(), file.getName());
         }
+        return this.filesToShare;
     }
 
     private void initCorba(String[] orbArgs) throws InvalidName, org.omg.CosNaming.NamingContextPackage.InvalidName, CannotProceed, NotFound {

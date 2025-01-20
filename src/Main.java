@@ -30,9 +30,7 @@ public class Main {
               gui.setClient(client);
               gui.addStatus("Corba client initiated ....");
               gui.addStatus("Client port listening at " + args[6]);
-              gui.addStatus("Getting files ....");
               gui.getList();
-              gui.addStatus("Files fetched");
           } catch (InvalidName e) {
               gui.addStatus("InvalidName error ....");
               gui.addStatus("Please restart the application");

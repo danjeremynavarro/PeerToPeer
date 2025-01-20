@@ -15,7 +15,9 @@ public class GUIClient extends JFrame {
 
     GUIClient(){
         this.setContentPane(panel1);
+        this.setupButtonListeners();
         this.pack();
+        this.setTitle("Peer to Peer Client");
         this.setSize(800, 600);
         this.setLocationRelativeTo(null);
     }
@@ -28,7 +30,11 @@ public class GUIClient extends JFrame {
         });
         this.syncNowButton.addActionListener(e -> {
             if (client != null) {
-                this.client.
+                ArrayList<File> filesShared = this.client.shareFiles();
+                this.addStatus("Files shared: " + filesShared.size());
+                for (File file : filesShared) {
+                    this.addStatus("File: " + file.getName());
+                }
             }
         });
     }
