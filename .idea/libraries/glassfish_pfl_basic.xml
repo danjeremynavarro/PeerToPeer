@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="glassfish.pfl.basic" type="repository">
+    <properties maven-id="org.glassfish.pfl:pfl-basic:4.1.2" />
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/pfl-basic-4.1.2.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/lib/pfl-basic-4.1.2-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES />
+  </library>
+</component>

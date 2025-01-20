@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="sun.corba.glassfish.codegen" type="repository">
+    <properties maven-id="com.sun.corba:glassfish-corba-codegen:3.1.0-b003" />
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/glassfish-corba-codegen-3.1.0-b003.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/glassfish-corba-asm-3.1.0-b003.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/glassfish-corba-orbgeneric-3.1.0-b003.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

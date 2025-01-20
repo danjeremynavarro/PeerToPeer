@@ -1,0 +1,36 @@
+<component name="libraryTable">
+  <library name="glassfish.corba.internal.api" type="repository">
+    <properties maven-id="org.glassfish.corba:glassfish-corba-internal-api:4.2.5" />
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/glassfish-corba-internal-api-4.2.5.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/gmbal-4.0.3.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/management-api-3.2.3.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/pfl-tf-4.1.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/asm-9.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/pfl-dynamic-4.1.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/asm-util-9.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/asm-tree-9.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/asm-analysis-9.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/pfl-basic-tools-4.1.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/pfl-tf-tools-4.1.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/asm-commons-7.3.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/pfl-basic-4.1.2.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/lib/glassfish-corba-internal-api-4.2.5-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/gmbal-4.0.3-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/management-api-3.2.3-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/pfl-tf-4.1.2-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/asm-9.1-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/pfl-dynamic-4.1.2-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/asm-util-9.1-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/asm-tree-9.1-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/asm-analysis-9.1-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/pfl-basic-tools-4.1.2-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/pfl-tf-tools-4.1.2-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/asm-commons-7.3.1-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/pfl-basic-4.1.2-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES />
+  </library>
+</component>

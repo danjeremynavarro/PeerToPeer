@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="glassfish.corba.csiv2.idl" type="repository">
+    <properties maven-id="org.glassfish.corba:glassfish-corba-csiv2-idl:4.2.5" />
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/glassfish-corba-csiv2-idl-4.2.5.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/glassfish-corba-omgapi-4.2.5.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/lib/glassfish-corba-csiv2-idl-4.2.5-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/glassfish-corba-omgapi-4.2.5-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES />
+  </library>
+</component>

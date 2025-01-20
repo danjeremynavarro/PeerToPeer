@@ -1,0 +1,14 @@
+module Assignment2 {
+    struct KeyVal {
+        string key;
+        string value;
+    };
+
+    typedef sequence<KeyVal> KeyValSeq;
+
+    interface FileShareServer {
+        KeyValSeq getFiles();
+        boolean insertFile(in string host, in string filename);
+        string getFile(in string filename);
+    };
+};
