@@ -17,7 +17,6 @@ import org.omg.PortableServer.POAPackage.WrongPolicy;
 import java.io.File;
 import java.sql.*;
 import java.util.ArrayList;
-import org.sqlite.JDBC;
 
 /**
  *   orbd -ORBInitialPort 1050 -ORBInitialHost localhost&

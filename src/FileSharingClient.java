@@ -135,19 +135,45 @@ public class FileSharingClient {
                     OutputStream output = new BufferedOutputStream(connection.getOutputStream())
             ) {
                 boolean startFile = false;
+                boolean isCheck = false;
                 String line;
                 while((line = input.readLine()) != null){
                     if (startFile){
-                        output.write(this.getFile(line));
+                        if (isCheck){
+                            if (this.isAvailable(line)){
+                                output.write("true\n".getBytes());
+                                output.flush();
+                                break;
+                            } else {
+                                output.write("false\n".getBytes());
+                                output.flush();
+                                break;
+                            }
+                        } else {
+                            output.write(this.getFile(line));
+                            output.flush();
+                            break;
+                        }
                     }
                     if (line.equalsIgnoreCase("get")){
                         startFile = true;
-                    } else {
-                        output.write("Pass get command \n".getBytes());
+                    } else if (line.equalsIgnoreCase("check")){
+                        startFile = true;
+                        isCheck = true;
+                    }
+                    else {
+                        output.write("Pass get or check command \n".getBytes());
                         output.flush();
+                        break;
                     }
                 }
+                output.close();
             }
+        }
+
+        private boolean isAvailable(String fileName){
+            File file = new File(path);
+            return file.exists() && file.isFile();
         }
 
         private byte[] getFile(String fileName) throws IOException {
