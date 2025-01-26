@@ -1,6 +1,7 @@
 module Assignment2 {
     struct KeyVal {
         string key;
+        string port;
         string value;
     };
 
@@ -8,7 +9,8 @@ module Assignment2 {
 
     interface FileShareServer {
         KeyValSeq getFiles();
-        boolean insertFile(in string host, in string filename);
+        boolean insertFile(in string host, in long port, in string filename);
         string getFile(in string filename);
+        boolean unshareFile(in string host, in string filename);
     };
 };

@@ -39,14 +39,15 @@ public class FileSharingServer extends FileShareServerPOA {
         connection = DriverManager.getConnection(this.databasePath);
     }
 
-    public boolean insertFile(String host, String fileName) {
+    public boolean insertFile(String host, int port, String fileName) {
         try {
             if (this.connection == null) {
                 this.connect();
             }
-            PreparedStatement insertPreparedStatement = connection.prepareStatement("INSERT INTO file_share (host, file) VALUES (?, ?)");
+            PreparedStatement insertPreparedStatement = connection.prepareStatement("INSERT INTO file_share (host, port, file) VALUES (?, ?, ?)");
             insertPreparedStatement.setString(1, host);
-            insertPreparedStatement.setString(2, fileName);
+            insertPreparedStatement.setInt(2, port);
+            insertPreparedStatement.setString(3, fileName);
             insertPreparedStatement.executeUpdate();
             return true;
         } catch (SQLException e) {
@@ -57,7 +58,39 @@ public class FileSharingServer extends FileShareServerPOA {
 
     @Override
     public String getFile(String filename) {
-        return "";
+        try {
+            if (this.connection == null) {
+                this.connect();
+            }
+            PreparedStatement getPreparedStatement = connection.prepareStatement("SELECT * FROM file_share WHERE filename = ?");
+            getPreparedStatement.setString(1, filename);
+            ResultSet resultSet = getPreparedStatement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getString("host");
+            } else {
+                return "";
+            }
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+            return "";
+        }
+    }
+
+    @Override
+    public boolean unshareFile(String host, String filename) {
+        try {
+            if (this.connection == null) {
+                this.connect();
+            }
+            PreparedStatement insertPreparedStatement = connection.prepareStatement("DELETE FROM file_share WHERE host = ? AND file = ?");
+            insertPreparedStatement.setString(1, host);
+            insertPreparedStatement.setString(2, filename);
+            insertPreparedStatement.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+            return false;
+        }
     }
 
     public KeyVal[] getFiles() {
@@ -67,7 +100,7 @@ public class FileSharingServer extends FileShareServerPOA {
             ArrayList<KeyVal> files = new ArrayList<>();
             while (results.next()) {
 //                files.put(results.getString("host"), results.getString("file"));
-                files.add(new KeyVal(results.getString("host"), results.getString("file")));
+                files.add(new KeyVal(results.getString("host"), results.getString("port") ,results.getString("file")));
             }
 
             if (files.isEmpty()) {

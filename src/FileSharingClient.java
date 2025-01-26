@@ -3,19 +3,20 @@ import Assignment2.FileShareServerHelper;
 import Assignment2.KeyVal;
 import org.omg.CORBA.ORB;
 import org.omg.CORBA.ORBPackage.InvalidName;
-import org.omg.CosNaming.NamingContext;
 import org.omg.CosNaming.NamingContextExt;
 import org.omg.CosNaming.NamingContextExtHelper;
-import org.omg.CosNaming.NamingContextHelper;
 import org.omg.CosNaming.NamingContextPackage.CannotProceed;
 import org.omg.CosNaming.NamingContextPackage.NotFound;
-
 import java.io.*;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.nio.file.Files;
@@ -30,19 +31,15 @@ public class FileSharingClient {
 
     private ArrayList<File> filesToShare = new ArrayList<>();
 
-    private ArrayList<File> currentlySharedFiles = new ArrayList<>();
-
     private InetAddress ip = InetAddress.getByName("127.0.0.1");
+
+    private SharedFile sharedFile;
 
     public FileSharingClient(String[] orbArgs, String path, int port) throws UnknownHostException, InvalidName, org.omg.CosNaming.NamingContextPackage.InvalidName, CannotProceed, NotFound {
         this.path = path;
         this.port = port;
         this.exec(orbArgs);
         System.out.println("Client Initialized with path: " + this.path + " and port: " + this.port);
-    }
-
-    public void setNewPath(String newPath) {
-        this.path = newPath;
     }
 
     private void exec(String[] orbArgs) throws InvalidName, org.omg.CosNaming.NamingContextPackage.InvalidName, CannotProceed, NotFound {
@@ -52,6 +49,14 @@ public class FileSharingClient {
         getFilesToShare();
         getCurrentlySharedFiles();
         shareFiles();
+    }
+
+    public String getPath(){
+        return this.path;
+    }
+
+    public void setPath(String path){
+        this.path = path;
     }
 
     public ArrayList<File> getFilesToShare(){
@@ -68,17 +73,87 @@ public class FileSharingClient {
         return this.filesToShare;
     }
 
-    private void getCurrentlySharedFiles(){
+    public Set<String> getCurrentlySharedFiles(){
         KeyVal[] allFiles = this.server.getFiles();
-        System.out.println(allFiles.length);
+        ArrayList<KeyVal> filtered = new ArrayList<>();
+        for (KeyVal keyVal : allFiles){
+            int p = Integer.parseInt(keyVal.port);
+            String h = this.ip.getHostAddress();
+            if ((h.equals("127.0.0.1") && p != this.port) || !h.equals(keyVal.key)){
+                filtered.add(keyVal);
+            }
+        }
+        KeyVal[] f = new KeyVal[filtered.size()];
+        filtered.toArray(f);
+        this.sharedFile = new SharedFile(f);
+        return this.sharedFile.getFiles();
     }
 
     public ArrayList<File> shareFiles(){
         getFilesToShare();
         for (File file : filesToShare){
-            this.server.insertFile(this.ip.getHostAddress(), file.getName());
+            this.server.insertFile(this.ip.getHostAddress(), this.port, file.getName());
         }
         return this.filesToShare;
+    }
+
+    public boolean isAvailable(String file) throws IOException {
+        HashMap<String, String> h;
+        h = this.sharedFile.getHost(file);
+        if (h == null){return false;} else {
+            return this.confirmAvailability(h.get("host"), Integer.parseInt(h.get("port")), h.get("file"));
+        }
+    }
+
+    public String downloadFile(String fileName) throws IOException {
+        String pathToSave = this.path + "/downloads";
+        Path path = Paths.get(pathToSave);
+        if (!Files.exists(path)){
+            new File(pathToSave).mkdir();
+        }
+        HashMap<String,String> h = new HashMap<>();
+        h = this.sharedFile.getHost(fileName);
+        if (h == null){return null;}
+
+        return this.downloadFileFromServer(h.get("host"), Integer.parseInt(h.get("port")), h.get("file"));
+    }
+
+    private boolean confirmAvailability(String host, int port, String filename) throws IOException {
+        Socket clientSocket = new Socket(host, port);
+        BufferedReader input = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+        OutputStream output = new BufferedOutputStream(clientSocket.getOutputStream());
+        String p = "check\r\n" + filename + "\r\n";
+        output.write(p.getBytes());
+        output.flush();
+        String line = input.readLine();
+        if (line.equals("true")){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private String downloadFileFromServer(String host, int port, String filename) throws IOException {
+        Socket clientSocket = new Socket(host, port);
+        BufferedInputStream input = new BufferedInputStream(clientSocket.getInputStream());
+        OutputStream output = new BufferedOutputStream(clientSocket.getOutputStream());
+        String p = "get\r\n" + filename + "\r\n";
+        output.write(p.getBytes());
+        output.flush();
+
+        String pathToSave = this.path + "/downloads/" + filename;
+        FileOutputStream fos = new FileOutputStream(pathToSave);
+
+        int count;
+        byte[] buffer = new byte[8192]; // or 4096, or more
+
+        while ((count = input.read(buffer)) > 0) {
+            fos.write(buffer, 0, count);
+        }
+        fos.flush();
+        fos.close();
+        clientSocket.close();
+        return pathToSave;
     }
 
     private void initCorba(String[] orbArgs) throws InvalidName, org.omg.CosNaming.NamingContextPackage.InvalidName, CannotProceed, NotFound {
@@ -132,7 +207,7 @@ public class FileSharingClient {
         public void processClient(Socket connection) throws IOException {
             try (
                     BufferedReader input = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                    OutputStream output = new BufferedOutputStream(connection.getOutputStream())
+                    BufferedOutputStream output = new BufferedOutputStream(connection.getOutputStream())
             ) {
                 boolean startFile = false;
                 boolean isCheck = false;
@@ -167,12 +242,11 @@ public class FileSharingClient {
                         break;
                     }
                 }
-                output.close();
             }
         }
 
         private boolean isAvailable(String fileName){
-            File file = new File(path);
+            File file = new File(path, fileName);
             return file.exists() && file.isFile();
         }
 
@@ -181,12 +255,8 @@ public class FileSharingClient {
                 return null;
             }
             File file = new File(path, fileName);
-            try {
-                byte[] fileContent = Files.readAllBytes(file.toPath());
-                return fileContent;
-            } finally {
-
-            }
+            byte[] fileContent = Files.readAllBytes(file.toPath());
+            return fileContent;
         }
 
         @Override
