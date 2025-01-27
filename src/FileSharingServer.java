@@ -30,7 +30,6 @@ public class FileSharingServer extends FileShareServerPOA {
     FileSharingServer() throws SQLException {
         databasePath += System.getProperty("user.dir") + File.separator + "identifier.sqlite";
         System.out.println("Database Path: " + databasePath);
-
         this.connect();
         System.out.println("Connected to database");
     }
@@ -143,7 +142,7 @@ public class FileSharingServer extends FileShareServerPOA {
             NameComponent path[] = ncRef.to_name(name);
             ncRef.rebind(path, href);
 
-            System.out.println("HelloServer ready and waiting ...");
+            System.out.println("File Sharing Server ready and waiting ...");
 
             // wait for invocations from clients
             orb.run();
