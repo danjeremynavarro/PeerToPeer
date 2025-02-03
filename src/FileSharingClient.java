@@ -26,11 +26,11 @@ public class FileSharingClient {
     private int port;
     // Path location of download and file to serve
     private String path;
-
+    // The server instance for corba
     private FileShareServer server;
-
+    // Files that are to be shared by this client
     private ArrayList<File> filesToShare = new ArrayList<>();
-
+    // Ip address of the client
     private InetAddress ip = InetAddress.getByName("127.0.0.1");
 
     private SharedFile sharedFile;
@@ -61,11 +61,15 @@ public class FileSharingClient {
     public String getPath(){
         return this.path;
     }
-
+    // Mechanism to change the parent directory. Due to time constraint i wasnt able to implement this on gui
     public void setPath(String path){
         this.path = path;
     }
 
+    /**
+     * Reads the directory and returns all the files in the directory. Ignores subdirectories
+     * @return
+     */
     public ArrayList<File> getFilesToShare(){
         File[] files = new File(this.path).listFiles();
         this.filesToShare = new ArrayList<>();
@@ -80,6 +84,10 @@ public class FileSharingClient {
         return this.filesToShare;
     }
 
+    /**
+     * Retrieves shared files through corba
+     * @return
+     */
     public Set<String> getCurrentlySharedFiles(){
         KeyVal[] allFiles = this.server.getFiles();
         ArrayList<KeyVal> filtered = new ArrayList<>();
@@ -96,6 +104,10 @@ public class FileSharingClient {
         return this.sharedFile.getFiles();
     }
 
+    /**
+     * Insert files using corba
+     * @return
+     */
     public ArrayList<File> shareFiles(){
         getFilesToShare();
         for (File file : filesToShare){
@@ -104,6 +116,12 @@ public class FileSharingClient {
         return this.filesToShare;
     }
 
+    /**
+     * Checks if file is available in the host and port
+     * @param file
+     * @return
+     * @throws IOException
+     */
     public boolean isAvailable(String file) throws IOException {
         HashMap<String, String> h;
         h = this.sharedFile.getHost(file);
@@ -112,6 +130,12 @@ public class FileSharingClient {
         }
     }
 
+    /**
+     * Downloads file and place them into the downloads folder
+     * @param fileName
+     * @return
+     * @throws IOException
+     */
     public String downloadFile(String fileName) throws IOException {
         String pathToSave = this.path + "/downloads";
         Path path = Paths.get(pathToSave);
@@ -125,6 +149,14 @@ public class FileSharingClient {
         return this.downloadFileFromServer(h.get("host"), Integer.parseInt(h.get("port")), h.get("file"));
     }
 
+    /**
+     * Helper to check availability of file
+     * @param host
+     * @param port
+     * @param filename
+     * @return
+     * @throws IOException
+     */
     private boolean confirmAvailability(String host, int port, String filename) throws IOException {
         Socket clientSocket = new Socket(host, port);
         BufferedReader input = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
@@ -140,6 +172,14 @@ public class FileSharingClient {
         }
     }
 
+    /**
+     * Helper to download file from other client using a socket connection
+     * @param host
+     * @param port
+     * @param filename
+     * @return
+     * @throws IOException
+     */
     private String downloadFileFromServer(String host, int port, String filename) throws IOException {
         Socket clientSocket = new Socket(host, port);
         BufferedInputStream input = new BufferedInputStream(clientSocket.getInputStream());
@@ -163,6 +203,14 @@ public class FileSharingClient {
         return pathToSave;
     }
 
+    /**
+     * Helper to instantiate the server instance through corba
+     * @param orbArgs
+     * @throws InvalidName
+     * @throws org.omg.CosNaming.NamingContextPackage.InvalidName
+     * @throws CannotProceed
+     * @throws NotFound
+     */
     private void initCorba(String[] orbArgs) throws InvalidName, org.omg.CosNaming.NamingContextPackage.InvalidName, CannotProceed, NotFound {
         ORB orb = ORB.init(orbArgs, null);
         org.omg.CORBA.Object objRef = orb.resolve_initial_references("NameService");
@@ -172,6 +220,9 @@ public class FileSharingClient {
         System.out.println("Corba Client Initialized");
     }
 
+    /**
+     * Helper that runs the client
+     */
     private void runClient(){
         System.out.println("Starting Client ...");
         System.out.println("Reading available files to share ...");
@@ -199,16 +250,24 @@ public class FileSharingClient {
         }
     }
 
+    /**
+     * Helper to run the socket of the client
+     */
     private void runServer(){
         Thread server = new Thread(new Server());
         server.start();
     }
 
+    /**
+     * A class the runs a socket for client to client communication
+     */
     private class Server implements Runnable{
         private final int MAX_THREADS = Runtime.getRuntime().availableProcessors();
 
         /**
-         * Socket SErver
+         * Processes the client connections. First reads if a string terminated by a line is check or get
+         * If check returns true or false if file is available
+         * If get returns a bytestream of the file if exist
          * @param connection
          */
         public void processClient(Socket connection) throws IOException {
@@ -252,11 +311,13 @@ public class FileSharingClient {
             }
         }
 
+        // Helper to check if file is available
         private boolean isAvailable(String fileName){
             File file = new File(path, fileName);
             return file.exists() && file.isFile();
         }
 
+        // Helper to read files into bytearray
         private byte[] getFile(String fileName) throws IOException {
             if (fileName == null) {
                 return null;
@@ -266,6 +327,7 @@ public class FileSharingClient {
             return fileContent;
         }
 
+        // Run the socket in a separate thread
         @Override
         public void run() {
             ExecutorService executor = Executors.newFixedThreadPool(MAX_THREADS);

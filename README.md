@@ -15,6 +15,11 @@ Follow the steps below to run the program.
 1. This program is tested on a Debian computer
 2. This program is compiled on Java 8
 3. Uses sqlite for database
+4. This program uses Intellij Swing Designer plugin to create the gui. If there are compiling errors please use intellij with the plugin https://www.jetbrains.com/help/idea/design-gui-using-swing.html
+5. Directory structure is as follows:
+    1. /out/production/Assignment2 - contains the compiled class. A sqlite database and the essential library to run the program
+   2. /src - source code for the program
+   3. /lib - libraries used by the program
 
 ### Server instructions
 1. First ensure that corba is installed on the computer

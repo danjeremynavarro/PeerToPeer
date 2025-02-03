@@ -23,10 +23,24 @@ import java.util.ArrayList;
  */
 
 ///usr/lib/jvm/java-1.8.0-openjdk-amd64/bin/java -cp "/home/user/Nextcloud/COMP489DistributedComputing/Assignment2/lib/*:." FileSharingServer -ORBInitialPort 1050 -ORBInitialHost localhost&
+
+/**
+ * The `FileSharingServer` class provides functionalities for managing a file-sharing service.
+ * It extends the generated `FileShareServerPOA` and implements methods to interact with a database
+ * for file sharing operations.
+ *
+ * This class offers capabilities to insert, retrieve, unshare files, and list shared files.
+ * It uses a SQLite database for storage of shared file data and establishes a connection to the database
+ * upon initialization.
+ */
 public class FileSharingServer extends FileShareServerPOA {
     private String databasePath = "jdbc:sqlite:";
     private Connection connection;
 
+    /**
+     * Initialize the sqlite database identified as a file called identifier.sqlite
+     * @throws SQLException
+     */
     FileSharingServer() throws SQLException {
         databasePath += System.getProperty("user.dir") + File.separator + "identifier.sqlite";
         System.out.println("Database Path: " + databasePath);
@@ -34,10 +48,22 @@ public class FileSharingServer extends FileShareServerPOA {
         System.out.println("Connected to database");
     }
 
+    /**
+     * Connect to the database
+     * @throws SQLException
+     */
     private void connect() throws SQLException {
         connection = DriverManager.getConnection(this.databasePath);
     }
 
+    /**
+     * Uses prepared sql statements to insert into the database the host , port and filename.
+     * Any sql errors will be printed out in the console
+     * @param host
+     * @param port
+     * @param fileName
+     * @return
+     */
     public boolean insertFile(String host, int port, String fileName) {
         try {
             if (this.connection == null) {
@@ -55,6 +81,11 @@ public class FileSharingServer extends FileShareServerPOA {
         }
     }
 
+    /**
+     * Retrieves information from the database about the host and port that shares a given file
+     * @param filename
+     * @return
+     */
     @Override
     public String getFile(String filename) {
         try {
@@ -75,6 +106,12 @@ public class FileSharingServer extends FileShareServerPOA {
         }
     }
 
+    /**
+     * Mechanism to delete a record. Due to time constraint i wasnt able to fully implement this on the client side
+     * @param host
+     * @param filename
+     * @return
+     */
     @Override
     public boolean unshareFile(String host, String filename) {
         try {
@@ -92,6 +129,10 @@ public class FileSharingServer extends FileShareServerPOA {
         }
     }
 
+    /**
+     * Retrives a list of all shared files.
+     * @return
+     */
     public KeyVal[] getFiles() {
         try {
             Statement getStatement = connection.createStatement();
