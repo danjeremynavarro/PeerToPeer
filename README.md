@@ -60,6 +60,7 @@ the file name.
 1. The primary key of the database is the host and file. This means that running the program on the same computer will not update
 the database if there is an entry with only the port that is different
 2. No mechanism currently to delete entries in the file sharing server though the client checks with the other client if a file is available
+3. There might be other errors with validation as due to time constraints i can only meet the requirement in the assignment
 
 #### Test Plan
 1. Create a share directory and fill it with sample files
