@@ -35,11 +35,18 @@ public class FileSharingClient {
 
     private SharedFile sharedFile;
 
-    public FileSharingClient(String[] orbArgs, String path, int port) throws UnknownHostException, InvalidName, org.omg.CosNaming.NamingContextPackage.InvalidName, CannotProceed, NotFound {
+    private GUIClient gui;
+
+    public FileSharingClient(String[] orbArgs, String path, int port, GUIClient gui) throws UnknownHostException, InvalidName, org.omg.CosNaming.NamingContextPackage.InvalidName, CannotProceed, NotFound {
         this.path = path;
         this.port = port;
         this.exec(orbArgs);
+        setGui(gui);
         System.out.println("Client Initialized with path: " + this.path + " and port: " + this.port);
+    }
+
+    public void setGui(GUIClient gui){
+        this.gui = gui;
     }
 
     private void exec(String[] orbArgs) throws InvalidName, org.omg.CosNaming.NamingContextPackage.InvalidName, CannotProceed, NotFound {
@@ -271,13 +278,15 @@ public class FileSharingClient {
                            try {
                                Server.this.processClient(connection);
                            } catch (IOException e) {
-                               throw new RuntimeException(e);
+                               System.err.println(e.getMessage());
+                               System.exit(1);
                            }
                        }
                    });
                }
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                System.err.println(e.getMessage());
+                System.exit(1);
             }
         }
     }

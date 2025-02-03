@@ -12,17 +12,16 @@ import org.omg.PortableServer.POAHelper;
 import org.omg.PortableServer.POAManagerPackage.AdapterInactive;
 import org.omg.PortableServer.POAPackage.ServantNotActive;
 import org.omg.PortableServer.POAPackage.WrongPolicy;
-import java.net.UnknownHostException;
 import java.sql.SQLException;
 
 public class Main {
-    public static void main(String[] args) throws SQLException, UnknownHostException {
+    public static void main(String[] args) throws InvalidName, AdapterInactive, WrongPolicy, ServantNotActive, org.omg.CosNaming.NamingContextPackage.InvalidName, CannotProceed, NotFound {
       if (args[0].equals("client")) {
           GUIClient gui = new GUIClient();
           gui.setVisible(true);
           try {
               gui.addStatus("Loading client class ....");
-              FileSharingClient client = new FileSharingClient(new String[]{args[1], args[2], args[3], args[4]}, args[5], Integer.parseInt(args[6]));
+              FileSharingClient client = new FileSharingClient(new String[]{args[1], args[2], args[3], args[4]}, args[5], Integer.parseInt(args[6]), gui);
               gui.setClient(client);
               gui.addStatus("Corba client initiated ....");
               gui.addStatus("Client port listening at " + args[6]);
@@ -72,24 +71,11 @@ public class Main {
               NameComponent path[] = ncRef.to_name(name);
               ncRef.rebind(path, href);
 
-              System.out.println("HelloServer ready and waiting ...");
+              System.out.println("File Sharing Server ready and waiting ...");
 
               // wait for invocations from clients
               orb.run();
-          } catch (InvalidName e) {
-          } catch (WrongPolicy e) {
-              throw new RuntimeException(e);
-          } catch (org.omg.CosNaming.NamingContextPackage.InvalidName e) {
-              throw new RuntimeException(e);
           } catch (SQLException e) {
-              throw new RuntimeException(e);
-          } catch (AdapterInactive e) {
-              throw new RuntimeException(e);
-          } catch (ServantNotActive e) {
-              throw new RuntimeException(e);
-          } catch (CannotProceed e) {
-              throw new RuntimeException(e);
-          } catch (NotFound e) {
               throw new RuntimeException(e);
           }
       }
